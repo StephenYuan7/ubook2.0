@@ -14,9 +14,13 @@ def hello_world():
     return render_template("hello.html")
 
 
-# 全局异常处理
 @app.errorhandler(Exception)
 def framework_error(e):
+    """
+    全局异常处理
+    :param e:
+    :return:
+    """
     if isinstance(e, APIException):
         return e
     if isinstance(e, HTTPException):
