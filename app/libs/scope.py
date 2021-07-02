@@ -27,7 +27,7 @@ class AdminScope(Scope):
 
 class UserScope(Scope):
     allow_api = []
-    allow_module = ['v1.client']
+    allow_module = ['v1.client', 'v1.seller']
 
     def __init__(self):
         pass

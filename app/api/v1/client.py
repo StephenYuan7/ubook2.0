@@ -7,7 +7,7 @@ from app.libs.red_print import Redprint
 from app.libs.token_auth import auth
 from app.models.base import db
 from app.models.user import User
-from app.validators.form import ClientForm, TokenForm, ClientCreateForm
+from app.validators.form import ClientForm, TokenForm, ClientCreateForm, ClientIdentityForm
 
 api = Redprint('client')
 
@@ -56,6 +56,17 @@ def reset_client():
                    form.user_grade.data,
                    form.student_number.data, )
     return Success()
+
+
+@api.route('/information', methods=['GET'])
+@auth.login_required
+def get_information():
+    form = ClientIdentityForm().validate_for_api()
+    if form.student_number.data == '0000000000':
+        user = User.query.filter_by(id=g.user.uid).first_or_404()
+    else:
+        user = User.query.filter_by(student_number=form.student_number.data).first_or_404()
+    return jsonify(user)
 
 
 def generate_auth_token(uid, scope=None,
