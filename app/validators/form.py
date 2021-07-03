@@ -65,3 +65,38 @@ class ProductUpForm(Form):
 
 class ProductRenewForm(ProductUpForm):
     product_id = IntegerField(validators=[DataRequired(message='不允许为空')])
+
+
+class ProductDeleteForm(Form):
+    product_id = IntegerField(validators=[DataRequired(message='不允许为空')])
+
+
+class PageForm(Form):
+    page = IntegerField(validators=[NumberRange(min=0)])
+
+
+class ProductSearchForm(Form):
+    key = StringField(validators=[length(max=100)])
+    kind = IntegerField(validators=[NumberRange(min=0)])
+    time = IntegerField(validators=[NumberRange(min=0, max=1)])
+    price = IntegerField(validators=[NumberRange(min=0, max=1)])
+    page = IntegerField(validators=[NumberRange(min=0)])
+
+
+class TransactionAddForm(Form):
+    product_id = IntegerField(validators=[DataRequired(message='不允许为空')])
+    price = IntegerField()
+    address = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=100)])
+    order_time = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=100)])
+
+
+class TransactionForm(Form):
+    transaction_id = IntegerField(validators=[DataRequired(message='不允许为空')])
+
+
+class TransactionEvaluateForm(TransactionForm):
+    star = IntegerField(validators=[NumberRange(min=1, max=5)])
+    evaluation = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=1000)])
