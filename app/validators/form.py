@@ -85,11 +85,11 @@ class ProductSearchForm(Form):
 
 class TransactionAddForm(Form):
     product_id = IntegerField(validators=[DataRequired(message='不允许为空')])
-    price = IntegerField()
-    address = StringField(validators=[DataRequired(message='不允许为空'), length(
-        min=1, max=100)])
-    order_time = StringField(validators=[DataRequired(message='不允许为空'), length(
-        min=1, max=100)])
+    # price = IntegerField()
+    # address = StringField(validators=[DataRequired(message='不允许为空'), length(
+    #     min=1, max=100)])
+    # order_time = StringField(validators=[DataRequired(message='不允许为空'), length(
+    #     min=1, max=100)])
 
 
 class TransactionForm(Form):
@@ -100,3 +100,29 @@ class TransactionEvaluateForm(TransactionForm):
     star = IntegerField(validators=[NumberRange(min=1, max=5)])
     evaluation = StringField(validators=[DataRequired(message='不允许为空'), length(
         min=1, max=1000)])
+
+
+class StoreCreateForm(Form):
+    address = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=100)])
+    name = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=100)])
+    phone = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=10)])
+    description = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=1000)])
+
+
+class UserIdForm(Form):
+    user_id = IntegerField()
+
+
+class AddressCreateForm(Form):
+    address = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=100)])
+    phone = StringField(validators=[DataRequired(message='不允许为空'), length(
+        min=1, max=10)])
+
+
+class AddressDeleteForm(Form):
+    address_id = IntegerField()

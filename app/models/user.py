@@ -12,7 +12,7 @@ class User(Base):
     real_name = Column(String(50), nullable=False)
     user_academy = Column(String(30), nullable=False)
     nickname = Column(String(30), nullable=False)
-    school_id = Column(Integer)     # 后面加外键
+    school_id = Column(Integer)
     user_grade = Column(String(7), nullable=False)
     student_number = Column(String(10), nullable=False, unique=True)
     auth = Column(SmallInteger, default=1)

@@ -52,3 +52,15 @@ class Forbidden(APIException):
     code = 403
     error_code = 1004
     msg = 'forbidden, not in scope'
+
+
+class FormatErrors(APIException):
+    code = 500
+    error_code = 2006
+    msg = 'the format is invalid'
+
+
+class SizeOverflow(APIException):
+    code = 407
+    error_code = 2003
+    msg = 'the size has already overflow '

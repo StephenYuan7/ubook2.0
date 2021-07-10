@@ -1,10 +1,13 @@
-from flask import jsonify, current_app, g
+import os
+
+from flask import jsonify, current_app, g, request
 
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 
-from app.libs.error_code import Success
+from app.libs.error_code import Success, SizeOverflow
 from app.libs.red_print import Redprint
 from app.libs.token_auth import auth
+from app.libs.up_image import up_image
 from app.models.base import db
 from app.models.user import User
 from app.validators.form import ClientForm, TokenForm, ClientCreateForm, ClientIdentityForm
@@ -67,6 +70,27 @@ def get_information():
     else:
         user = User.query.filter_by(student_number=form.student_number.data).first_or_404()
     return jsonify(user)
+
+
+@api.route('/upprofile', methods=['POST'])
+@auth.login_required
+def up_profile():
+    uid = g.user.uid
+    cl = request.content_length
+    if cl is not None and cl > 3 * 1024 * 1024:
+        return SizeOverflow()
+    # 获取图片文件 name = upload
+    user = User.query.filter_by(id=uid).first_or_404()
+    img = request.files.get('upload')
+    image_name = up_image(img)
+    with db.auto_commit():
+        if user.profile and user.profile != 'default.jpg':
+            basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            path = basedir + "/static/image/"
+            if os.path.exists(path + user.profile):
+                os.remove(path + user.profile)
+        user.profile = image_name
+    return Success()
 
 
 def generate_auth_token(uid, scope=None,

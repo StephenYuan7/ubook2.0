@@ -1,7 +1,10 @@
-from flask import jsonify, current_app, g
-from app.libs.error_code import Success, DeleteSuccess
+import os
+
+from flask import jsonify, current_app, g, request
+from app.libs.error_code import Success, DeleteSuccess, NotFound
 from app.libs.red_print import Redprint
 from app.libs.token_auth import auth
+from app.libs.up_image import up_image
 from app.models.base import db
 from app.models.product import Product
 from app.models.transaction import Transaction
@@ -53,7 +56,7 @@ def delete_product():
     return DeleteSuccess()
 
 
-@api.route('/self', methods=['GET'])
+@api.route('/self', methods=['POST'])
 @auth.login_required
 def my_up():
     form = PageForm().validate_for_api()
@@ -81,4 +84,31 @@ def refuse_transaction():
     if transaction.state == '0':
         with db.auto_commit():
             transaction.state = 'b'
+    return Success()
+
+
+@api.route('/upimage/<product_id>/<image_id>', methods=['POST'])
+@auth.login_required
+def up_product_image(product_id, image_id):
+    image_id = int(image_id)
+    if image_id > 3 or image_id < 1:
+        return NotFound()
+    product = Product().verify_user_product(g.user.uid, int(product_id))
+    img = request.files.get('upload')
+    image_name = up_image(img)
+    with db.auto_commit():
+        basedir = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+        path = basedir + "/static/image/"
+        if image_id == 1:
+            if product.image1 and os.path.exists(path + str(product.image1)):
+                os.remove(path + str(product.image1))
+            product.image1 = image_name
+        if image_id == 2:
+            if product.image2 and os.path.exists(path + str(product.image2)):
+                os.remove(path + str(product.image2))
+            product.image2 = image_name
+        if image_id == 3:
+            if product.image3 and os.path.exists(path + str(product.image2)):
+                os.remove(path + str(product.image3))
+            product.image3 = image_name
     return Success()

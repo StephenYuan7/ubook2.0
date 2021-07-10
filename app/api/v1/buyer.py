@@ -2,6 +2,7 @@ from flask import jsonify, current_app, g
 from datetime import datetime
 from app.libs.error_code import Success, DeleteSuccess
 from app.libs.red_print import Redprint
+from app.libs.time_transform import int_to_time
 from app.libs.token_auth import auth
 from app.models.base import db
 from app.models.product import Product
@@ -12,7 +13,7 @@ from app.validators.form import PageForm, ProductSearchForm, \
 api = Redprint('buyer')
 
 
-@api.route('/search', methods=['GET'])
+@api.route('/search', methods=['POST'])
 @auth.login_required
 def search_product():
     form = ProductSearchForm().validate_for_api()
@@ -28,13 +29,16 @@ def add_transaction():
     return Success()
 
 
-@api.route('/self', methods=['GET'])
+@api.route('/self', methods=['POST'])
 @auth.login_required
 def my_buy():
     form = PageForm().validate_for_api()
     begin = current_app.config['PAGE'] * form.page.data
     transactions = Transaction().get_user_transactions(g.user.uid, begin, current_app.config['PAGE'])
-    return jsonify(transactions)
+    data = [dict(zip(result.keys(), result)) for result in transactions]
+    for result in data:
+        result['create_time'] = int_to_time(result['create_time'])
+    return jsonify(data)
 
 
 @api.route('/cancel', methods=['POST'])

@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-from app.api.v1 import client, seller, buyer
+from app.api.v1 import client, seller, buyer, store, address
 
 
 def create_blueprint_v1():
@@ -8,5 +8,6 @@ def create_blueprint_v1():
     client.api.register(bp_v1)
     seller.api.register(bp_v1)
     buyer.api.register(bp_v1)
-
+    store.api.register(bp_v1)
+    address.api.register(bp_v1)
     return bp_v1
